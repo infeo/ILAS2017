@@ -2,8 +2,8 @@ package misc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 /**
@@ -21,11 +21,13 @@ public class SemeionParser {
 	 * @param pathToFile path to the Semeion Handwritten Digit file
 	 * @return the parsed data as a double matrix
 	 */
-	public static double [][] read(String pathToFile) {
+	public static Entry<double [][],double[][]> read(String pathToFile) {
 		Locale.setDefault(Locale.ENGLISH);
 		int dimension = 256;
 		int size = 1593;
+		int classes = 10;
 		double [][] data = new double[size][dimension];
+		double [][] classification = new double[size][classes];
 		try {
 			File fpath = new File(pathToFile);
 			Scanner scannerFile = new Scanner(fpath);
@@ -33,8 +35,11 @@ public class SemeionParser {
 				for(int j=0;j<dimension;j++){
 					data[i][j]=scannerFile.nextDouble();
 				}
-				//currently the class is discarded
-				scannerFile.nextLine();
+				
+				for(int j=0;j<classes;j++){
+					classification[i][j]= scannerFile.nextDouble();
+				}
+//				scannerFile.nextLine();
 			}
 			scannerFile.close();
 		}
@@ -42,6 +47,6 @@ public class SemeionParser {
 			e.printStackTrace();
 			System.err.println("File not found");
 		}
-		return data;
+		return new SemeionEntry(data,classification);
 	}
 }

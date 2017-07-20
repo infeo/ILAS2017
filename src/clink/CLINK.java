@@ -2,9 +2,7 @@ package clink;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map.Entry;
 
-import clst_inter.ClusterMeasure;
 import clst_intra.DistanceMeasure;
 
 /**
@@ -126,7 +124,7 @@ public class CLINK{
 		
 		//add the singleton cluster
 		for(int i=0;i<n;i++){
-			currClustering[i]= new Cluster(i,data[i]);
+			currClustering[i]= new Cluster(-i-1,data[i]);
 			matrixToCluster[i]=i;
 		}
 		
@@ -148,7 +146,7 @@ public class CLINK{
 			//merge them
 			int a2 = matrixToCluster[a];
 			int b2 = matrixToCluster[b];
-			clustering[x-k] = new Cluster(x, min,currClustering[a2],currClustering[b2]);
+			clustering[x-k] = new Cluster(x-k, min,currClustering[a2],currClustering[b2]);
 			currClustering[a2]= clustering[x-k];
 			currClustering[b2]= clustering[x-k];
 			
