@@ -69,7 +69,6 @@ public class CLINK{
 	}
 	
 	/**
-	 * TODO: füge noch die singleton cluster richtig dem clustering hinzu!
 	 * delegate methoh to cluster arbitrary collections
 	 * @param input a collection of points of same dimension
 	 * @param k the k-clustering, after if its computed the algorithm stops

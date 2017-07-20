@@ -51,6 +51,9 @@ public class TestCLINK {
 
 	/**
 	 * Computes the confusion matrix and prints it in a file
+	 * @param c a computed hierarchical clustering up to layer k
+	 * @param k the smallest k-clustering which is computed
+	 * @param classification a binary matrix indicating to which class every point belogns
 	 */
 	public static void computeConfusion(CLINK c, int k, double[][] classification){
 		int numOfClasses = classification[0].length;
@@ -92,7 +95,7 @@ public class TestCLINK {
 					deq.push(tmp);
 				}
 				
-				// an we delete the reference in the array
+				// and we delete the reference in the array
 				hC[currIndex]=null;
 			}
 		}
