@@ -44,9 +44,10 @@ public class CLINK{
 	/**
 	 * computes for the given method a hierarchical clustering accordingly to the distance measures
 	 * @param input a matrix of d dimensional vectors
+	 * @param k the k-clustering, after if its computed the algorithm stops
 	 * @return true if the computation was sucessful
 	 */
-	public boolean cluster(double[][] input){
+	public boolean cluster(double[][] input, int k){
 		int count = input.length;
 		if(count == 0){
 			System.err.println("Input is empty");
@@ -66,16 +67,17 @@ public class CLINK{
 			}
 		}
 		
-		return computeClustering();
+		return computeClustering(k);
 	}
 	
 	/**
 	 * TODO: füge noch die singleton cluster richtig dem clustering hinzu!
 	 * delegate methoh to cluster arbitrary collections
 	 * @param input a collection of points of same dimension
+	 * @param k the k-clustering, after if its computed the algorithm stops
 	 * @return true if a clustering could be computed
 	 */
-	public boolean cluster(Collection<double[]> input){
+	public boolean cluster(Collection<double[]> input, int k){
 		if (input == null)
 			throw new IllegalArgumentException("no given input!");
 		if (input.isEmpty())
@@ -107,23 +109,34 @@ public class CLINK{
 				D[i][j]= d_pts.dist(data[i], data[j]);
 			}
 		}
-		return computeClustering();
+		return computeClustering(k);
 	}
 	
 	/**
 	 * Real method for computing the clustering
+	 * @param k the number of clusters in current CLustering after which the algorithm stops
 	 * @return true if the computation was sucessfull
 	 */
-	private boolean computeClustering(){
+	private boolean computeClustering(int k){
 		int n = data.length;
-		clustering =new Cluster[(2*n)-1];
-		for(int x=n-1;x>=0;x--){
+		clustering =new Cluster[n-k];
+		Cluster[] currClustering = new Cluster[n];
+		//keep track which entry of the matrix corresponds to wich cluster
+		int [] matrixToCluster = new int [n];
+		
+		//add the singleton cluster
+		for(int i=0;i<n;i++){
+			currClustering[i]= new Cluster(i,data[i]);
+			matrixToCluster[i]=i;
+		}
+		
+		for(int x=n-1;x>k-1;x--){
 			
 			//1. find closest clusters
 			double min = Double.POSITIVE_INFINITY;
 			int a=-1,b=-1;
-			for(int i=0;i<n;i++){
-				for(int j=i+1;j<n;j++){
+			for(int i=0;i<D.length;i++){
+				for(int j=i+1;j<D.length;j++){
 					if(D[i][j]<min){
 						min=D[i][j];
 						a=i;
@@ -133,18 +146,57 @@ public class CLINK{
 			}
 			
 			//merge them
-			clustering[x] = new Cluster(x,min , clustering[a], clustering[b]);
+			int a2 = matrixToCluster[a];
+			int b2 = matrixToCluster[b];
+			clustering[x-k] = new Cluster(x, min,currClustering[a2],currClustering[b2]);
+			currClustering[a2]= clustering[x-k];
+			currClustering[b2]= clustering[x-k];
 			
 			//update the matrix
-			double tmp;
-			for(int i=0;i<n;i++){
-				tmp=(D[a][i]+D[b][i]+Math.abs(D[a][i]-D[b][i]))/2;
-				D[a][i] =tmp;
-				D[i][a]=tmp;
-				D[i][b]=tmp;
-				D[b][i]=tmp;
+			double [][] D_tmp = new double[x][x];
+			for(int i=0;i<x;i++){
+				for(int j=i+1;j<x; j++) {
+					if(i==a){
+						if(j<b) {
+							D_tmp[i][j] = (D[a][j]+D[b][j]+Math.abs(D[a][j]-D[b][j]))/2;
+						}
+						else{
+							D_tmp[i][j] = (D[a][j+1]+D[b][j+1]+Math.abs(D[a][j+1]-D[b][j+1]))/2;
+						}
+					}
+					else if(i<b){
+						if(j<b) {
+							D_tmp[i][j] = D[i][j];
+						}
+						else {
+							D_tmp[i][j] = D[i][j+1];
+						}
+					}
+					else {
+						if(j<b) {
+							D_tmp[i][j] = D[i+1][j];
+						}
+						else {
+							D_tmp[i][j] = D[i+1][j+1];
+						}
+					}
+				}
+			}
+			D = D_tmp;
+			
+			//update the matrixToCluster vector
+			for(int i=b;i< x; i++) {
+				matrixToCluster[i]=matrixToCluster[i+1];
 			}
 		}
 		return true;
+	}
+	
+	public Cluster [] getClustering() {
+		return clustering;
+	}
+	
+	public double[][] getInput(){
+		return data;
 	}
 }

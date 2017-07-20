@@ -33,6 +33,8 @@ public class SemeionParser {
 				for(int j=0;j<dimension;j++){
 					data[i][j]=scannerFile.nextDouble();
 				}
+				//currently the class is discarded
+				scannerFile.nextLine();
 			}
 			scannerFile.close();
 		}

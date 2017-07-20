@@ -1,5 +1,7 @@
 package misc;
 
+import org.jfree.chart.plot.Plot;
+
 import clink.CLINK;
 import clst_intra.EuclideanDistance;
 
@@ -21,20 +23,23 @@ public class TestCLINK {
 			throw new IllegalArgumentException("Only one argument is allowed. Please only specifiy the path to the data file");
 		}
 		
-		easyTest();
+//		easyTest();
 		
-//		double [][] data = SemeionParser.read(args[0]);
-//		CLINK c = new CLINK(new EuclideanDistance());
-//		c.cluster(data);
-		
-//		System.out.println("Done");
+		double [][] data = SemeionParser.read(args[0]);
+		CLINK c = new CLINK(new EuclideanDistance());
+		c.cluster(data,10);
+		System.out.println("Done");
 	}
 	
 	public static void easyTest(){
-		double [][] data = {{1,1},{2,1},{2,6},{4,6},{3,7},{8,2},{9,3},{10,4},{11,5},{12,6}};
+		double [][] data = {{1,1},{2,1},{2,6},{4,6},{3,7},{8,2},{9,3}}; //,{10,4},{11,5},{12,6}};
 		CLINK c = new CLINK(new EuclideanDistance());
-		c.cluster(data);
+		c.cluster(data, 3);
 		System.out.println("Done");
+		PlotClustering.showHierarchicalClustering(1, c.getClustering().length+1, c, 4);
 	}
 
+	
+	
+	
 }
